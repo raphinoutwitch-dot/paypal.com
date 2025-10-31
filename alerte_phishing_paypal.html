@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Alerte Sécurité — Simulation</title>
+<style>
+  :root { --red:#e11900; --bg:#0b0f14; --txt:#e9eef5; }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--txt)}
+  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .panel{
+    width:100%;max-width:760px;background:#0d1117;border:1px solid #202733;border-radius:12px;
+    box-shadow:0 0 0 4px rgba(225,25,0,.12), 0 18px 60px rgba(0,0,0,.45);
+    position:relative;overflow:hidden
+  }
+  .topbar{
+    display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid #202733;
+    background:linear-gradient(180deg,#131a23,#0d1117)
+  }
+  .dot{width:10px;height:10px;border-radius:50%}
+  .dot.red{background:var(--red);box-shadow:0 0 10px var(--red)}
+  h1{font-size:18px;margin:0}
+  .body{padding:18px}
+  .banner{
+    display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid #2a3341;border-radius:10px;
+    background:#111827; margin-bottom:14px
+  }
+  .banner strong{color:#ffd166}
+  .terminal{
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    background:#0a0f14;border:1px solid #202733;border-radius:10px;padding:14px;min-height:200px;line-height:1.4;
+    position:relative;overflow:auto
+  }
+  .cursor{display:inline-block;width:10px;background:#7dd3fc;margin-left:2px;animation:blink 1s step-end infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  .frame{
+    position:absolute;inset:0;border:3px solid var(--red);pointer-events:none;opacity:.75;
+    animation:pulse 1.2s infinite
+  }
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(225,25,0,.6)}70%{box-shadow:0 0 0 16px rgba(225,25,0,0)}100%{box-shadow:0 0 0 0 rgba(225,25,0,0)}}
+
+  .countdown{
+    font-variant-numeric:tabular-nums;font-size:32px;font-weight:800;color:#ff6b6b;
+    text-align:center;margin:16px 0
+  }
+
+  /* Section pédagogique qui se révèle */
+  .edu{margin-top:16px;display:none}
+  .edu h2{font-size:18px;margin:0 0 10px}
+  .tips{display:grid;gap:10px}
+  .tip{background:#0f1621;border:1px solid #263142;border-radius:10px;padding:10px}
+  .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .btn{
+    padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:600
+  }
+  .btn.primary{background:#0ea5e9;color:white}
+  .btn.ghost{background:transparent;border:1px solid #2a3341;color:#d6e3f1}
+  .tiny{opacity:.7;font-size:12px;margin-top:6px}
+
+  /* légère “secousse” d’entrée */
+  .shake{animation:shake .38s linear 1}
+  @keyframes shake{
+    0%,100%{transform:translateX(0)}
+    20%{transform:translateX(-6px)} 40%{transform:translateX(6px)}
+    60%{transform:translateX(-4px)} 80%{transform:translateX(4px)}
+  }
+  @keyframes flash {
+  0%, 100% { background: var(--bg); }
+  50% { background: #8b0000; }
+  }
+  .flash { animation: flash 0.2s 30; }
+
+</style>
+</head>
+
+
+<body>
+
+<div class="wrap">
+  <section class="panel shake" role="dialog" aria-labelledby="title" aria-describedby="desc">
+    <div class="frame" aria-hidden="true"></div>
+    <div class="topbar">
+      <span class="dot red" aria-hidden="true"></span>
+      <h1 id="title">ALERTE SÉCURITÉ</h1>
+    </div>
+    <div class="body">
+      <p class="banner" id="desc">
+        <strong>Attention :</strong> Activité suspecte détectée. Tentative d’accès non sécurisé en cours…
+      </p>
+
+      <div class="terminal" id="term" aria-live="polite" aria-atomic="false"></div>
+
+      <div class="countdown" id="count">Analyse: 05</div>
+
+      <!-- Section révélant la simulation et les conseils -->
+      <div class="edu" id="edu">
+        <h2>Simulation pédagogique ✅</h2>
+        <p>Tu viens de voir une mise en scène “choc” pour rappeler <strong>à quel point il est facile d’être piégé</strong> par une page qui imite un service connu.</p>
+        <div class="tips">
+          <div class="tip">🔒 Vérifie l’URL (https, domaine exact). Les imitateurs changent souvent une lettre.</div>
+          <div class="tip">🛑 Ne saisis jamais ton mot de passe après avoir cliqué un lien reçu par mail/SMS. Passe par le site officiel.</div>
+          <div class="tip">🧠 Méfie-toi des urgences (“compte bloqué”, “paiement en attente”). C’est une technique de pression.</div>
+          <div class="tip">🧩 Active l’authentification à 2 facteurs (2FA) pour limiter les dégâts.</div>
+        </div>
+        <div class="btns">
+          <button class="btn primary" onclick="window.history.length?history.back():location.href='index.html'">Revenir au formulaire</button>
+          <button class="btn ghost" onclick="location.reload()">Rejouer la démo</button>
+        </div>
+        <p class="tiny">Cette page ne stocke aucune donnée et sert uniquement à l’éducation à la cybersécurité.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  document.body.classList.add('flash');
+  setTimeout(()=>document.body.classList.remove('flash'),4600);
+
+  // Texte "terminal" à dérouler
+  const lines = [
+    "[OK] Connexion non reconnue — analyse du terminal…",
+    "[!] Jeton de session douteux détecté.",
+    "[!] Empreinte navigateur → correspondance à 92.1%.",
+    "[ALERTE] Hameçonnage potentiel détecté.",
+    "[ACTION] Mise sous surveillance temporaire…"
+  ];
+
+  const term = document.getElementById('term');
+  const count = document.getElementById('count');
+  const edu  = document.getElementById('edu');
+
+  // Effet dactylographie
+  async function typeLine(text, speed=16){
+    const p = document.createElement('div');
+    term.appendChild(p);
+    for(let i=0;i<text.length;i++){
+      p.textContent += text[i];
+      await new Promise(r=>setTimeout(r,speed));
+      term.scrollTop = term.scrollHeight;
+    }
+    const cursor = document.createElement('span');
+    cursor.className='cursor';
+    p.appendChild(cursor);
+  }
+
+  // Compte à rebours court, puis on révèle la section éducative
+  let t = 5;
+  const timer = setInterval(()=>{
+    t--; count.textContent = "Analyse: 0" + t;
+    if(t<=0){
+      clearInterval(timer);
+      document.querySelector('.banner').innerHTML =
+        "<strong>C’était une simulation.</strong> Voici comment te protéger :";
+      edu.style.display = 'block';
+      count.style.display = 'none';
+      document.title = "Simulation anti-phishing";
+    }
+  }, 900);
+
+  // Déroule les lignes
+  (async () => {
+    for(const L of lines){ await typeLine(L); }
+  })();
+</script>
+</body>
+</html>

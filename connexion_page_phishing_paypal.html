@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Connexion - Paypal (démo éducative)</title>
+  <style>
+    /* Reset léger */
+    * { box-sizing: border-box; }
+    html,body { height:100%; margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial; background:#f6f7f9; color:#111; }
+
+    /* Centre la carte */
+    .wrap {
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+
+    .card {
+      width:100%;
+      max-width:420px;
+      background:#fff;
+      border-radius:12px;
+      padding:28px;
+      box-shadow:0 6px 18px rgba(20,30,40,0.08);
+      border:1px solid rgba(0,0,0,0.04);
+    }
+
+    .brand {
+      text-align:center;
+      margin-bottom:18px;
+      font-weight:700;
+      font-size:28px;
+      letter-spacing: -0.5px;
+    }
+
+    h1 {
+      font-size:18px;
+      margin:6px 0 18px;
+      text-align:center;
+      color:#222;
+      font-weight:600;
+    }
+
+    form { display:flex; flex-direction:column; gap:12px; }
+
+    label {
+      display:block;
+      font-size:13px;
+      margin-bottom:6px;
+      color:#333;
+    }
+
+    .input {
+      width:100%;
+      padding:12px 14px;
+      border-radius:8px;
+      border:1px solid #d6d9dd;
+      font-size:15px;
+      outline:none;
+      transition:box-shadow .12s, border-color .12s;
+      background:transparent;
+    }
+
+    .input:focus {
+      border-color:#2b7be4;
+      box-shadow:0 0 0 4px rgba(43,123,228,0.08);
+    }
+
+    .hint-row {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:13px;
+      margin-top:6px;
+    }
+
+    .link {
+      color:#2b7be4;
+      text-decoration:none;
+    }
+    .link:hover { text-decoration:underline; }
+
+    .btn-primary {
+      margin-top:6px;
+      padding:12px 14px;
+      background:#0b66d1; /* generic blue */
+      color:white;
+      border:none;
+      border-radius:28px;
+      font-size:15px;
+      font-weight:600;
+      cursor:pointer;
+      transition:transform .05s ease, box-shadow .08s;
+      box-shadow:0 4px 10px rgba(11,102,209,0.15);
+    }
+    .btn-primary:active { transform:translateY(1px); }
+    .btn-primary[disabled] { opacity:.6; cursor:not-allowed; box-shadow:none; }
+
+    .separator {
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin:16px 0;
+      font-size:13px;
+      color:#666;
+    }
+    .separator::before, .separator::after {
+      content:"";
+      flex:1;
+      height:1px;
+      background:#e6e7ea;
+      border-radius:2px;
+    }
+
+    .btn-ghost {
+      padding:10px 14px;
+      border-radius:28px;
+      border:2px solid #111;
+      background:transparent;
+      font-weight:600;
+      cursor:pointer;
+    }
+
+    .footer {
+      margin-top:18px;
+      display:flex;
+      justify-content:center;
+      gap:8px;
+      align-items:center;
+      font-size:13px;
+      color:#666;
+    }
+
+    .lang-select {
+      background:transparent;
+      border:0;
+      font-size:13px;
+      color:#444;
+      cursor:pointer;
+    }
+
+    /* password section reveal animation */
+    .reveal {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transform: translateY(-6px);
+      transition: max-height 300ms ease, opacity 250ms ease 40ms, transform 260ms ease;
+    }
+    .reveal.open {
+      max-height: 240px; /* large enough to show content */
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* password row with show/hide */
+    .password-row {
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .password-row .input {
+      flex:1;
+      margin-bottom:0;
+    }
+    .toggle-visibility {
+      background:transparent;
+      border:0;
+      font-size:13px;
+      cursor:pointer;
+      color:#2b7be4;
+      padding:6px 8px;
+      border-radius:6px;
+    }
+    .error {
+      color:#b21f2d;
+      font-size:13px;
+    }
+
+    @media (max-width:400px){
+      .card { padding:20px; border-radius:10px; }
+      .brand { font-size:22px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <main class="card" role="main" aria-labelledby="connect-title">
+      <div class="brand" aria-hidden="true">Paypal</div>
+
+      <h1 id="connect-title">Connectez-vous à votre compte</h1>
+
+      <form id="loginForm" novalidate>
+        <div id="identifierBlock">
+          <label for="identifier">Email</label>
+          <input id="identifier" name="identifier" class="input" type="text"
+                 inputmode="email" autocomplete="username" placeholder="email@example.com"
+                 aria-describedby="identifierHelp" required />
+          <div class="hint-row">
+            <div id="identifierHelp" style="color:#777; font-size:13px;">Nous vous enverrons un code si nécessaire.</div>
+            <a class="link" href="#" id="forgotLink">Adresse email oubliée ?</a>
+          </div>
+          <div id="identifierError" class="error" role="status" aria-live="polite" style="display:none"></div>
+        </div>
+
+        <button id="nextBtn" class="btn-primary" type="submit" aria-controls="passwordSection">Suivant</button>
+
+        <!-- Password section (hidden until email validated) -->
+        <div id="passwordSection" class="reveal" aria-hidden="true">
+          <div style="margin-top:12px;">
+            <label for="password">Mot de passe</label>
+            <div class="password-row" style="margin-top:6px;">
+              <input id="password" name="password" class="input" type="password" autocomplete="current-password" placeholder="Entrez votre mot de passe" />
+              <button type="button" id="togglePwd" class="toggle-visibility" aria-pressed="false" aria-label="Afficher le mot de passe">Afficher</button>
+            </div>
+            <div id="passwordError" class="error" role="status" aria-live="polite" style="display:none; margin-top:6px;"></div>
+
+            <div style="margin-top:12px;">
+              <button id="loginBtn" class="btn-primary" type="button">Se connecter</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="separator" aria-hidden="true">ou</div>
+
+        <div style="text-align:center;">
+          <button type="button" class="btn-ghost" id="createAccount">Ouvrir un compte</button>
+        </div>
+
+        <div class="footer" style="margin-top:20px;">
+          <span aria-hidden="true">🌐</span>
+          <select class="lang-select" id="langSelect" aria-label="Choisir la langue">
+            <option value="fr" selected>Français</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <script>
+    // JS minimal : validation simple et comportement didactique
+    (function(){
+      const form = document.getElementById('loginForm');
+      const idInput = document.getElementById('identifier');
+      const errId = document.getElementById('identifierError');
+      const nextBtn = document.getElementById('nextBtn');
+      const forgotLink = document.getElementById('forgotLink');
+      const createBtn = document.getElementById('createAccount');
+      const lang = document.getElementById('langSelect');
+
+      const pwdSection = document.getElementById('passwordSection');
+      const pwdInput = document.getElementById('password');
+      const loginBtn = document.getElementById('loginBtn');
+      const togglePwd = document.getElementById('togglePwd');
+      const pwdErr = document.getElementById('passwordError');
+
+      // simple helper pour vérifier email ou numéro basique
+      function looksLikeEmailOrPhone(value){
+        value = (value||'').trim();
+        if(!value) return false;
+        // email-ish: contains '@' and a dot after it
+        if(value.includes('@') && /\.[a-z]{2,}$/i.test(value)) return true;
+        // phone-ish: digits and optional + and spaces
+        if(/^\+?[0-9\s\-().]{6,}$/.test(value)) return true;
+        return false;
+      }
+
+      // reveal helper
+      function openPasswordSection() {
+        pwdSection.classList.add('open');
+        pwdSection.setAttribute('aria-hidden','false');
+        // focus the password input after a short delay to allow animation
+        setTimeout(() => pwdInput.focus(), 220);
+      }
+      function closePasswordSection() {
+        pwdSection.classList.remove('open');
+        pwdSection.setAttribute('aria-hidden','true');
+      }
+
+      form.addEventListener('submit', function(ev){
+        ev.preventDefault();
+        // If password section already open, do nothing here (we expect password submission via loginBtn)
+        if (pwdSection.classList.contains('open')) return;
+
+        errId.style.display = 'none';
+        const v = idInput.value.trim();
+        if(!looksLikeEmailOrPhone(v)){
+          errId.textContent = 'Saisis un email valide.';
+          errId.style.display = 'block';
+          idInput.setAttribute('aria-invalid','true');
+          idInput.focus();
+          return;
+        }
+
+        // Simule une vérification serveur qui accepte l'email et ensuite affiche le champ mot de passe
+        nextBtn.disabled = true;
+        nextBtn.textContent = 'Traitement...';
+
+        setTimeout(() => {
+          nextBtn.disabled = false;
+          nextBtn.textContent = 'Suivant';
+          // lock identifier and show password
+          idInput.setAttribute('disabled','true');
+          openPasswordSection();
+          // update "Suivant" button to hidden since now we display password flow
+          nextBtn.style.display = 'none';
+        }, 600);
+      });
+
+      // Toggle password visibility
+      togglePwd.addEventListener('click', function(){
+        const isHidden = pwdInput.type === 'password';
+        if(isHidden){
+          pwdInput.type = 'text';
+          togglePwd.textContent = 'Masquer';
+          togglePwd.setAttribute('aria-pressed','true');
+        } else {
+          pwdInput.type = 'password';
+          togglePwd.textContent = 'Afficher';
+          togglePwd.setAttribute('aria-pressed','false');
+        }
+        pwdInput.focus();
+      });
+
+      // Simulated login
+      loginBtn.addEventListener('click', function(){
+        pwdErr.style.display = 'none';
+        const pwd = pwdInput.value || '';
+        if (pwd.length < 8) {
+          pwdErr.textContent = 'Le mot de passe doit contenir au moins 8 caractères.';
+          pwdErr.style.display = 'block';
+          pwdInput.setAttribute('aria-invalid','true');
+          pwdInput.focus();
+          return;
+        }
+
+        // simulate authentication
+        loginBtn.disabled = true;
+        loginBtn.textContent = 'Connexion...';
+        setTimeout(() => {
+            // Redirection vers la page de simulation "choc"
+            window.location.href = 'gp2.html';
+            
+        }, 900);
+
+      });
+
+      // "Entrée" dans le champ mot de passe déclenche l'action de connexion
+      pwdInput.addEventListener('keydown', function(e){
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          loginBtn.click();
+        }
+      });
+
+      // lien "Adresse email oubliée ?"
+      forgotLink.addEventListener('click', function(ev){
+        ev.preventDefault();
+        const v = idInput.value.trim();
+        if(v){
+          alert('Procédure de récupération pour : ' + v);
+        } else {
+          alert('Procédure de récupération. Entre d’abord ton email ou ton mobile.');
+          idInput.focus();
+        }
+      });
+
+      // "Ouvrir un compte" -> simulation
+      createBtn.addEventListener('click', function(){
+        alert('Redirection vers la page de création de compte.');
+      });
+
+      // langage : simple démonstration (ne recharge pas la page)
+      lang.addEventListener('change', function(){
+        if(lang.value === 'en'){
+          document.documentElement.lang = 'en';
+          document.getElementById('connect-title').textContent = 'Sign in to your account';
+          document.querySelector('label[for="identifier"]').textContent = 'Email';
+          forgotLink.textContent = 'Forgot email address?';
+          nextBtn.textContent = 'Next';
+          loginBtn.textContent = 'Sign in';
+          createBtn.textContent = 'Create an account';
+          togglePwd.textContent = pwdInput.type === 'password' ? 'Show' : 'Hide';
+          document.getElementById('identifierHelp').textContent = 'We may send you a code if needed.';
+        } else {
+          document.documentElement.lang = 'fr';
+          document.getElementById('connect-title').textContent = 'Connectez-vous à votre compte';
+          document.querySelector('label[for="identifier"]').textContent = 'Email';
+          forgotLink.textContent = 'Adresse email oubliée ?';
+          nextBtn.textContent = 'Suivant';
+          loginBtn.textContent = 'Se connecter';
+          createBtn.textContent = 'Ouvrir un compte';
+          togglePwd.textContent = pwdInput.type === 'password' ? 'Afficher' : 'Masquer';
+          document.getElementById('identifierHelp').textContent = 'Nous vous enverrons un code si nécessaire.';
+        }
+      });
+
+      // petit focus utile au chargement
+      window.addEventListener('load', () => idInput.focus());
+    })();
+  </script>
+</body>
+</html>
